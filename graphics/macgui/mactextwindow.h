@@ -87,6 +87,9 @@ public:
 	void setTextSize(int textSize) { return _mactext->setTextSize(textSize); }
 	void setTextSize(int textSize, int start, int end) { return _mactext->setTextSize(textSize, start, end); }
 
+	int getTextScrollPos() { return _mactext->_scrollPos; }
+	void setScrollPos(int pos);
+
 	int getMouseLine(int x, int y);
 
 	/**

@@ -369,6 +369,14 @@ Common::U32String MacTextWindow::cutSelection() {
 	return selection;
 }
 
+void MacTextWindow::setScrollPos(int pos) {
+	_scrollPos = pos;
+	_mactext->_scrollPos = pos;
+
+	_contentIsDirty = true;
+	_mactext->setDirty(true);
+}
+
 int MacTextWindow::getMouseLine(int x, int y) {
 	// TODO: Improve the algorithm here, since after long scrolling there is
 	// sometimes error of +2 rows
