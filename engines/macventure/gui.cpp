@@ -1002,18 +1002,21 @@ Common::String Gui::getConsoleText() const {
 void Gui::setConsoleText(const Common::String &text) {
 	_outConsoleWindow->clearText();
 
-	_outConsoleWindow->setEditable(true);
+	int rows = MAX(0, _outConsoleWindow->getRowCount() - 1);
 	_outConsoleWindow->appendText(text);
-	_outConsoleWindow->setEditable(false);
+
+	int scrollPos = rows * _outConsoleWindow->getTextSize();
+	_outConsoleWindow->setScrollPos(scrollPos);
 }
 
 void Gui::printText(const Common::String &text) {
 	debugC(1, kMVDebugGUI, "Print Text: %s", text.c_str());
-	// WORKAROUND: Make sure newly added line is visible by
-	// making the window editable for the moment
-	_outConsoleWindow->setEditable(true);
+
+	int rows = MAX(0, _outConsoleWindow->getRowCount() - 1); // -1 for '\n' which is appended to every text string
 	_outConsoleWindow->appendText(text + '\n');
-	_outConsoleWindow->setEditable(false);
+
+	int scrollPos = rows * _outConsoleWindow->getTextSize();
+	_outConsoleWindow->setScrollPos(scrollPos);
 }
 
 void Gui::showPrebuiltDialog(PrebuiltDialogs type, const Common::String &title) {
