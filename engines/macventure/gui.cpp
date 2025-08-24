@@ -1722,6 +1722,7 @@ bool Gui::processInventoryEvents(WindowReference ref, WindowClick click, Common:
 			for (auto &obj : data.children) {
 				ObjID id = obj.obj;
 				Common::Rect bounds = _engine->getObjBounds(id);
+				bounds.translate(-data.scrollPos.x, -data.scrollPos.y);
 				if (lassoArea.intersects(bounds) || lassoArea.contains(bounds)) {
 					_engine->selectObject(id);
 					selectedObjects.push_back(id);
