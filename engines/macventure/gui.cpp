@@ -163,6 +163,9 @@ void Gui::initGUI() {
 	_screen.create(kScreenWidth, kScreenHeight, Graphics::PixelFormat::createFormatCLUT8());
 	_wm.setScreen(&_screen);
 
+	// Draw title image
+	drawTitle();
+
 	// Menu
 	_menu = _wm.addMenu();
 	if (!loadMenus())
@@ -210,7 +213,35 @@ void Gui::drawMenu() {
 }
 
 void Gui::drawTitle() {
-	warning("drawTitle hasn't been tested yet");
+	Common::MacResManager resMan;
+	Common::Path titlePath = _engine->MacVentureEngine::getFilePath(kTitlePathID);
+	resMan.open(titlePath);
+	Common::SeekableReadStream *stream = resMan.getResource(MKTAG('P', 'P', 'I', 'C'), 0);
+
+	if (stream) {
+		ImageAsset *titleImage = new ImageAsset(stream);
+
+		Graphics::ManagedSurface surf;
+		surf.create(titleImage->getWidth(), titleImage->getHeight(), _screen.format);
+		titleImage->blitInto(&surf, 0, 0, kBlitDirect);
+
+		Common::Rect screenBounds = _screen.getBounds();
+		int x = (screenBounds.width() - titleImage->getWidth()) / 2;
+		int y = (screenBounds.height() - titleImage->getHeight()) / 2;
+
+		g_system->copyRectToScreen(
+			surf.getBasePtr(0, 0),
+			surf.pitch,
+			x,
+			y,
+			surf.w,
+			surf.h);
+
+		g_system->updateScreen();
+		g_system->delayMillis(500);
+
+		delete titleImage;
+	}
 }
 
 void Gui::clearControls() {
