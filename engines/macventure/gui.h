@@ -134,6 +134,7 @@ public:
 	const WindowData& getWindowData(WindowReference reference);
 	Graphics::MacWindow *findWindow(WindowReference reference);
 
+	Graphics::ManagedSurface *getScreenSurface() { return &_screen; }
 	Graphics::MacWindowManager *getMacWindowManager() { return &_wm; }
 	const Graphics::Font& getCurrentFont();
 

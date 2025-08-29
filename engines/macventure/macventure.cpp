@@ -35,6 +35,9 @@
 #include "common/str-enc.h"
 #include "engines/util.h"
 
+#include "graphics/macgui/macdialog.h"
+#include "graphics/macgui/mactext.h"
+
 #include "macventure/macventure.h"
 
 // To move
@@ -251,8 +254,81 @@ void MacVentureEngine::resetGui() {
 }
 
 void MacVentureEngine::requestQuit() {
-	// TODO: Display save game dialog and such
-	_gameState = kGameStateQuitting;
+	if (!_gameChanged) {
+		_gameState = kGameStateQuitting;
+	} else {
+		Common::SeekableReadStream *res;
+		res = _resourceManager->getResource(MKTAG('A', 'L', 'R', 'T'), 0x83);
+		if (res) {
+			int top = res->readUint16BE();
+			int left = res->readUint16BE();
+			int height = res->readUint16BE() - top;
+			int width = res->readUint16BE() - left;
+			int itemList = res->readUint16BE();
+			delete res;
+
+			Common::Rect dialogBounds(Common::Point(left, top), width, height);
+
+			res = _resourceManager->getResource(MKTAG('D', 'I', 'T', 'L'), itemList);
+			Graphics::MacDialogButtonArray buttons;
+			Common::U32String title;
+
+			uint numItems = res->readUint16BE() + 1;
+			for (uint i = 0; i < numItems; i++) {
+				res->readUint32BE(); // reserved
+				top = res->readUint16BE();
+				left = res->readUint16BE();
+				height = res->readUint16BE() - top;
+				width = res->readUint16BE() - left;
+				byte type = res->readByte();
+
+				char *str = nullptr;
+				byte titleLength = res->readByte();
+				if (titleLength > 0) {
+					str = new char[titleLength + 1];
+					res->read(str, titleLength);
+					str[titleLength] = '\0';
+				}
+				if (titleLength & 1)
+					res->readByte(); // align
+
+				int fontHeight = _gui->getCurrentFont().getFontHeight();
+
+				switch (type & 0x7f) {
+				case 4:
+					if (height - fontHeight < 12) {
+						height = fontHeight + 12;
+					}
+					buttons.push_back(new Graphics::MacDialogButton(str, left, top, width, height));
+					break;
+				case 8:
+					//title = Common::U32String(str);
+					title = Common::U32String("Save changes before quitting?");
+					break;
+				default:
+					break;
+				}
+				if (str) {
+					delete[] str;
+					str = nullptr;
+				}
+			}
+
+			Graphics::MacText mactext(title, _gui->getMacWindowManager(), &_gui->getCurrentFont(),
+				Graphics::kColorBlack, Graphics::kColorWhite, dialogBounds.width(), Graphics::kTextAlignCenter);
+			Graphics::MacDialog save(_gui->getScreenSurface(), _gui->getMacWindowManager(), dialogBounds.width(), &mactext,
+				dialogBounds.width(), &buttons, 0);
+
+			int button = save.run();
+			if (button == 0) { // Yes
+				_gui->saveGame();
+				_gameState = kGameStateQuitting;
+			} else if (button == 2) { // No
+				_gameState = kGameStateQuitting;
+			}
+			delete res;
+		}
+	}
 }
 
 void MacVentureEngine::requestUnpause() {
