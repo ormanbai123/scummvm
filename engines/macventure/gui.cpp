@@ -320,9 +320,6 @@ void Gui::initWindows() {
 	_exitsWindow->setActive(false);
 	_exitsWindow->setCallback(exitsWindowCallback, this);
 	_exitsWindow->setTitle(findWindowData(kExitsWindow).title);
-	// TODO: In the original, the background is actually a clickable
-	// object that can be used to refer to the room itself. In that case,
-	// the background should be kPatternDarkGray.
 	_exitsWindow->setBackgroundPattern(kPatternLightGray);
 }
 
@@ -792,8 +789,6 @@ void Gui::drawInventories() {
 }
 
 void Gui::drawExitsWindow() {
-	_exitsWindow->setBackgroundPattern(kPatternLightGray);
-
 	Graphics::ManagedSurface *srf = _exitsWindow->getWindowSurface();
 
 	Common::Array<CommandButton>::const_iterator it = _exitsData->begin();
@@ -1231,7 +1226,7 @@ void Gui::checkSelect(const WindowData &data, Common::Point pos, const Common::R
 			child = (*it).obj;
 		}
 	}
-	if (child != 0) {
+	if (child != 0 || data.refcon == kMainGameWindow) {
 		if (!isDoubleClick)
 			selectDraggable(child, ref, pos);
 		_engine->handleObjectSelect(child, ref, shiftPressed, isDoubleClick);
@@ -1533,6 +1528,11 @@ void Gui::highlightExitButton(ObjID objID) {
 			it->select();
 		else
 			it->unselect();
+	}
+	if (objID == _engine->getParent(1)) {
+		_exitsWindow->setBackgroundPattern(kPatternDarkGray);
+	} else {
+		_exitsWindow->setBackgroundPattern(kPatternLightGray);
 	}
 }
 
