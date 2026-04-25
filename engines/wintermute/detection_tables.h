@@ -42,6 +42,7 @@ static const PlainGameDescriptor wintermuteGames[] = {
 	{"bickadoodle",     "Bickadoodle"},
 	{"bookmania",       "BookMania"},
 	{"bookofgron",      "Book of Gron Part One"},
+	{"bookoftime",      "Book of Time: Dina's tale"}, // Уақыт кітабы: Динаның Хикаясы
 	{"bthreshold",      "Beyond the Threshold"},
 	{"carolreed4",      "Carol Reed 4 - East Side Story"},
 	{"carolreed5",      "Carol Reed 5 - The Colour of Murder"},
@@ -532,6 +533,10 @@ static const WMEGameDescription gameDescriptions[] = {
 	// Book of Gron Part One
 	WME_WINENTRY("bookofgron", "",
 		WME_ENTRY1s("data.dcp", "e61b2ebee044a82fa0f8ca0fce2c8946", 83129531), Common::RU_RUS, ADGF_NO_FLAGS, WME_1_9_1),
+
+	// Book of Time
+	WME_WINENTRY("bookoftime", "",
+		WME_ENTRY1s("data.dcp", "0d60527a1f92b8d5e008eec71cf7a57b", 237786055), Common::RU_RUS, ADGF_UNSTABLE, WME_1_8_5),
 
 	// Carol Reed 4 - East Side Story (English)
 	WME_WINENTRY("carolreed4", "",
